@@ -22,11 +22,14 @@ class EPCI(models.Model):
     
     def __unicode__(self):
         return self.name.replace(self.type, self.get_type_display())
-    
-    def get_boundary(self):
-        cursor = connection.cursor()
-        cursor.execute("SELECT ST_Collect(ARRAY(SELECT poly FROM epci_city where epci_id = %s and poly IS NOT NULL));", [self.id])
-        return GEOSGeometry(cursor.fetchone()[0]).cascaded_union
+
+    def get_boundary(self, force=False):
+        if force or not self.poly:
+            cursor = connection.cursor()
+            cursor.execute("SELECT ST_Collect(ARRAY(SELECT poly FROM epci_city where epci_id = %s and poly IS NOT NULL));", [self.id])
+            self.poly = GEOSGeometry(cursor.fetchone()[0]).cascaded_union
+            self.save()
+        return self.poly
     
     class Meta:
         ordering = ['name']
