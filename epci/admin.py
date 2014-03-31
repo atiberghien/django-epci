@@ -2,13 +2,13 @@
 from django.contrib import admin
 
 from .models import TerritorialDelimitation, City
-from django.contrib.gis.admin.options import OSMGeoAdmin
+from django.contrib.gis.admin import GeoModelAdmin
 from mptt.admin import MPTTModelAdmin
 
 
 admin.site.register(TerritorialDelimitation, MPTTModelAdmin)
 
-class CityAdmin(OSMGeoAdmin):
+class CityAdmin(GeoModelAdmin):
     map_width = 400
     map_height = 400
     search_fields = ("name", "zipcode", "insee")
